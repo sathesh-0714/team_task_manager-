@@ -23,6 +23,16 @@ export const AuthProvider = ({ children }) => {
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
   };
 
+  // Helper to safely parse JSON response, throwing a clean error if non-JSON (like HTML fallback)
+  const safeParseJson = async (response) => {
+    const text = await response.text();
+    try {
+      return text ? JSON.parse(text) : {};
+    } catch (err) {
+      throw new Error(`Server returned invalid response (HTTP ${response.status}). Please check if the backend is running.`);
+    }
+  };
+
   // Helper fetch function that automatically injects auth headers
   const apiFetch = async (endpoint, options = {}) => {
     const headers = {
@@ -41,7 +51,7 @@ export const AuthProvider = ({ children }) => {
 
     try {
       const response = await fetch(endpoint, config);
-      const data = await response.json();
+      const data = await safeParseJson(response);
 
       if (!response.ok) {
         // If 401 (Unauthorized), trigger logout
@@ -75,7 +85,7 @@ export const AuthProvider = ({ children }) => {
         });
 
         if (response.ok) {
-          const userData = await response.json();
+          const userData = await safeParseJson(response);
           setUser(userData);
         } else {
           // Token invalid/expired
@@ -102,7 +112,7 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
+      const data = await safeParseJson(response);
 
       if (!response.ok) {
         throw new Error(data.message || 'Login failed. Please check your credentials.');
@@ -128,7 +138,7 @@ export const AuthProvider = ({ children }) => {
         body: JSON.stringify({ name, email, password, role }),
       });
 
-      const data = await response.json();
+      const data = await safeParseJson(response);
 
       if (!response.ok) {
         throw new Error(data.message || 'Sign up failed.');
