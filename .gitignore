@@ -1,0 +1,26 @@
+# Dependency directories
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Local databases
+*.sqlite
+*.sqlite-journal
+
+# Build directories
+client/dist/
+
+# Environment configurations
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE and system files
+.DS_Store
+.vscode/
+.idea/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
