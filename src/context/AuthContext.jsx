@@ -2,6 +2,9 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 
 const AuthContext = createContext();
 
+// Base API URL configuration: checks VITE_API_URL from environment or defaults to relative path
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token') || null);
@@ -50,7 +53,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     try {
-      const response = await fetch(endpoint, config);
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
       const data = await safeParseJson(response);
 
       if (!response.ok) {
@@ -78,7 +81,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
-        const response = await fetch('/api/auth/me', {
+        const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -106,7 +109,7 @@ export const AuthProvider = ({ children }) => {
   // LOGIN
   const login = async (email, password) => {
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -132,7 +135,7 @@ export const AuthProvider = ({ children }) => {
   // SIGNUP
   const signup = async (name, email, password, role) => {
     try {
-      const response = await fetch('/api/auth/signup', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password, role }),
